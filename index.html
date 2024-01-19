@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Snake Game</title>
+  <style>
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-board {
+      background-color: #f2f2f2;
+      width: 400px;
+      height: 400px;
+      border: 2px solid #000;
+      display: grid;
+      grid-template-rows: repeat(20, 1fr);
+      grid-template-columns: repeat(20, 1fr);
+    }
+    .snake-block, .food-block {
+      background-color: #4caf50;
+      border: 1px solid #2f8221;
+      padding: 15px;
+    }
+    .food-block {
+      background-color: #f44336;
+      border: 1px solid #d32f2f;
+    }
+    button {
+      margin: 0 5px;
+      padding: 15px;
+      font-size: px;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-board" id="gameBoard"></div>
+    <div>
+      <button id="upBtn">▲</button>
+    </div>
+    <div>
+      <button id="leftBtn">◀️</button>
+      <button id="rightBtn">▶️</button>
+    </div>
+    <div>
+      <button id="downBtn">▼</button>
+    </div>
+  </div>
+
+  <script>
+    const gameBoard = document.getElementById('gameBoard');
+
+    let snake = [{ x: 10, y: 10 }];
+    let food = { x: 5, y: 5 };
+    let direction = "right";
+
+    function draw() {
+      gameBoard.innerHTML = '';
+      snake.forEach(block => {
+        const snakeBlock = document.createElement('div');
+        snakeBlock.classList.add('snake-block');
+        snakeBlock.style.gridRowStart = block.y;
+        snakeBlock.style.gridColumnStart = block.x;
+        gameBoard.appendChild(snakeBlock);
+      });
+
+      const foodBlock = document.createElement('div');
+      foodBlock.classList.add('food-block');
+      foodBlock.style.gridRowStart = food.y;
+      foodBlock.style.gridColumnStart = food.x;
+      gameBoard.appendChild(foodBlock);
+    }
+
+    function moveSnake() {
+      let intervalReference;
+      intervalReference = setInterval(() => {
+        let head = { ...snake[0] };
+
+        switch (direction) {
+          case "up":
+            head.y--;
+            break;
+          case "down":
+            head.y++;
+            break;
+          case "left":
+            head.x--;
+            break;
+          case "right":
+            head.x++;
+            break;
+        }
+
+        snake.unshift(head);
+        if (head.x === food.x && head.y === food.y) {
+          do {
+            food.x = Math.floor(Math.random() * 20) + 1;
+            food.y = Math.floor(Math.random() * 20) + 1;
+          } while (snake.some(block => block.x === food.x && block.y === food.y));
+        } else {
+          snake.pop();
+        }
+        draw();
+      }, 100);
+
+      // Update direction on button click
+      document.getElementById('upBtn').onclick = function() {
+        if (direction !== "down" && direction !== "up") {
+          direction = "up";
+        }
+      };
+      document.getElementById('downBtn').onclick = function() {
+        if (direction !== "up" && direction !== "down") {
+          direction = "down";
+        }
+      };
+      document.getElementById('leftBtn').onclick = function() {
+        if (direction !== "right" && direction !== "left") {
+          direction = "left";
+        }
+      };
+      document.getElementById('rightBtn').onclick = function() {
+        if (direction !== "left" && direction !== "right") {
+          direction = "right";
+        }
+      };
+    }
+
+    moveSnake();
+  </script>
+</body>
+</html>
